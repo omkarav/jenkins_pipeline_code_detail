@@ -1,0 +1,40 @@
+    def loop_func(values){
+    values.each {
+   //    item -> echo "Hello ${item}"
+        item -> sh "git --version ; echo ${item}"
+    }
+}
+
+pipeline{			
+    agent any
+
+    stages{
+        stage('Build'){
+            	input{
+                    message "Please specify environment:"			
+                    ok "OK"
+					submitter "dba"
+					submitterParameter "whoIsSubmitter"
+                    parameters {
+						string(name: 'environment', defaultValue: 'Dev', description: 'Environment to build for (Valid values: Dev, Test, Prod)')
+											                    }
+	}
+		
+                			
+            			
+           
+                
+                steps{			
+                    
+				echo "stage 1 "
+				 script {
+                    def values = "${environment}".split(',')
+                    loop_func(values)
+                }
+                }
+            }
+				
+	
+			}
+        }			
+    		
