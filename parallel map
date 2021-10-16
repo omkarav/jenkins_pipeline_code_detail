@@ -1,0 +1,25 @@
+node 
+{
+ properties([
+  parameters([
+    string(name: 'Componets', defaultValue: 'abc', description: 'list of users '),
+    string(name: 'instance', defaultValue: 'abcabb1', description: 'instance name ')
+  ])
+])   
+
+
+def jobs = [:]
+def components = params.Componets.split(",")
+stage('Build, run, report') {
+    for (int i = 0; i < components.size(); ++i) {
+        def index = i
+        def component = components[index].trim()
+        jobs[i] = {
+            node {
+                sh "echo $component $instance"
+            }
+        }
+    }
+    parallel jobs
+}
+}
