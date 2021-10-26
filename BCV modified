@@ -1,0 +1,95 @@
+    def loop_func(values){
+    values.each {
+       item -> echo "Hello ${item}"
+    //    item -> sh "git --version ; echo ${item}"
+    }
+}
+
+def runShell(String command){
+    def responseCode = sh returnStatus: true, script: "${command} &> tmp.txt"
+    def output =  readFile(file: "tmp.txt")
+    return (output != "")
+}
+
+node() {
+   // adds job parameters within jenkinsfile
+   properties([
+     parameters([
+       string(
+         defaultValue: '',
+         description: 'enter values for USG1',
+         name: 'USG1'
+       ),
+     string(
+         defaultValue: '',
+         description: 'enter values for USG2',
+         name: 'USG2'
+       ),
+	string(
+         defaultValue: '',
+         description: 'enter values for USG3',
+         name: 'USG3'
+       ),
+string(
+         defaultValue: '',
+         description: 'enter values for USG4',
+         name: 'USG4'
+       )
+	   
+		   
+     ])
+   ])
+   try {
+    if ( params.USG1!='' ) {
+                            
+  stage('USAGE1') {	
+      
+ timestamps {
+      sh ' echo 1:${USG1}:abc ; sleep 10 &'
+      sleep 5
+      sh 'echo 1:${USG1}:xyz'
+ }
+	}	
+}
+	  if ( params.USG2!='' ) {
+                            
+  stage('USAGE2') {	
+      
+
+      sh 'echo "2:${USG2}:abc" > /tmp/abc; sleep 10 &'
+      sleep 5
+      sh 'echo 2:${USG2}:xyz >> /tmp/abc'
+	
+	}	
+	  }
+	  
+  if ( params.USG3!='' ) {
+                            
+  stage('USAGE3') {	
+      
+      sh ' echo 3:${USG3}:abc'
+      sleep 5
+      sh 'echo 3:${USG3}:xyz'
+	
+	}	
+  }
+  if ( params.USG4!='' ) {
+                            
+  stage('USAGE4') {	
+      
+
+      sh ' echo 4:${USG4}:abc'
+      sleep 5
+      sh 'echo 4:${USG4}:xyz'
+	
+	}	
+}
+}
+finally {
+    stage ('TRANSFER') {
+ if (runShell('grep \'20\' /tmp/abc')) {
+                    currentBuild.result = 'FAILURE'
+}
+}
+}
+}
